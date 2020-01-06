@@ -17,12 +17,14 @@ class EscWidget: PKWidget {
     var customizationLabel: String = "Esc"
     var view: NSView!
 
+    private let key: KeySender = KeySender(keyCode: Int32(0x35), isAux: false)
+    
     required init() {
-        self.view = NSButton(title: "Esc", target: self, action: #selector(printMessage))
+        self.view = PKButton(title: "esc", maxWidth: 64, target: self, action: #selector(tap))
     }
     
-    @objc private func printMessage() {
-        print("[EscWidget]: Hello, World!")
+    @objc private func tap() {
+        key.send()
     }
         
 }
