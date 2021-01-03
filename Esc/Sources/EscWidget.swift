@@ -28,3 +28,34 @@ class EscWidget: PKWidget {
     }
         
 }
+
+extension EscWidget: PKScreenEdgeMouseDelegate {
+	
+	private var button: PKButton {
+		return view as! PKButton
+	}
+	
+	private func shouldHighlight(for location: NSPoint, in view: NSView) -> Bool {
+		return button.convert(button.bounds, to: view).contains(location)
+	}
+	
+	func screenEdgeController(_ controller: PKScreenEdgeController, mouseEnteredAtLocation location: NSPoint, in view: NSView) {
+		button.isHighlighted = shouldHighlight(for: location, in: view)
+	}
+	
+	func screenEdgeController(_ controller: PKScreenEdgeController, mouseMovedAtLocation location: NSPoint, in view: NSView) {
+		button.isHighlighted = shouldHighlight(for: location, in: view)
+	}
+	
+	func screenEdgeController(_ controller: PKScreenEdgeController, mouseClickAtLocation location: NSPoint, in view: NSView) {
+		button.isHighlighted = shouldHighlight(for: location, in: view)
+		if button.isHighlighted {
+			tap()
+		}
+	}
+	
+	func screenEdgeController(_ controller: PKScreenEdgeController, mouseExitedAtLocation location: NSPoint, in view: NSView) {
+		button.isHighlighted = false
+	}
+	
+}
