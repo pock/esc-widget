@@ -13,7 +13,7 @@ import PockKit
 /// Make sure to include `PockKit` in your Podfile and run `pod install`
 				        
 class EscWidget: PKWidget {
-    var identifier: NSTouchBarItem.Identifier = NSTouchBarItem.Identifier(rawValue: "EscWidget")
+    static var identifier: String = "EscWidget"
     var customizationLabel: String = "Esc"
     var view: NSView!
 
