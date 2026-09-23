@@ -11,18 +11,25 @@
 
 static io_connect_t _driver(void) {
     static mach_port_t sEventDrvrRef = 0;
-    mach_port_t masterPort, service, iter;
+    mach_port_t service, iter;
     if (!sEventDrvrRef) {
-        kern_return_t kr = IOMasterPort(bootstrap_port, &masterPort);
-        assert(KERN_SUCCESS == kr);
-        kr = IOServiceGetMatchingServices(masterPort, IOServiceMatching(kIOHIDSystemClass), &iter);
-        assert(KERN_SUCCESS == kr);
+        /// `assert()` is not compiled out in Release (no `NDEBUG`): a failure here used to abort Pock.
+        /// Return `MACH_PORT_NULL` instead (IOHIDPostEvent then fails) and try again on next key press.
+        kern_return_t kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(kIOHIDSystemClass), &iter);
+        if (KERN_SUCCESS != kr) {
+            return MACH_PORT_NULL;
+        }
         service = IOIteratorNext(iter);
-        assert(service);
-        kr = IOServiceOpen(service, mach_task_self(), kIOHIDParamConnectType, &sEventDrvrRef);
-        assert(KERN_SUCCESS == kr);
-        IOObjectRelease(service);
         IOObjectRelease(iter);
+        if (!service) {
+            return MACH_PORT_NULL;
+        }
+        kr = IOServiceOpen(service, mach_task_self(), kIOHIDParamConnectType, &sEventDrvrRef);
+        IOObjectRelease(service);
+        if (KERN_SUCCESS != kr) {
+            sEventDrvrRef = 0;
+            return MACH_PORT_NULL;
+        }
     }
     return sEventDrvrRef;
 }
