@@ -10,6 +10,7 @@
 #define KeySenderHelper_h
 
 #include <stdio.h>
+#include <stdint.h>
 
 void KeySenderPress(uint16_t keyCode, _Bool isAux);
 void KeySenderRelease(uint16_t keyCode, _Bool isAux);
